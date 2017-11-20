@@ -1,0 +1,4 @@
+Notre algo : https://en.wikipedia.org/wiki/Chandy-Lamport_algorithm
+
+Juste signature : https://en.wikipedia.org/wiki/Lamport_signature
+
