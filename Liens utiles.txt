@@ -1,4 +1,5 @@
-Notre algo : https://fr.wikipedia.org/wiki/Probl%C3%A8me_des_g%C3%A9n%C3%A9raux_byzantins
+Notre problème : https://fr.wikipedia.org/wiki/Probl%C3%A8me_des_g%C3%A9n%C3%A9raux_byzantins
 
 Juste signature : https://en.wikipedia.org/wiki/Lamport_signature
 
+étapes de l'algo : http://marknelson.us/2007/07/23/byzantine/
