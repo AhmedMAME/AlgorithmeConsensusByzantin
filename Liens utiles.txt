@@ -3,3 +3,7 @@ Notre problème : https://fr.wikipedia.org/wiki/Probl%C3%A8me_des_g%C3%A9n%C3%A9r
 Juste signature : https://en.wikipedia.org/wiki/Lamport_signature
 
 étapes de l'algo : http://marknelson.us/2007/07/23/byzantine/
+
+Sécurité:
+https://docs.oracle.com/javase/8/docs/api/javax/crypto/spec/package-summary.html
+https://docs.oracle.com/javase/8/docs/api/javax/crypto/package-summary.html
