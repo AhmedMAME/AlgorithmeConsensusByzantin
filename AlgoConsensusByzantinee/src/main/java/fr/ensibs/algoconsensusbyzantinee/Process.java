@@ -5,10 +5,27 @@
  */
 package fr.ensibs.algoconsensusbyzantinee;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
 /**
  *
  * @author Mehdi
  */
-public class Process extends Thread{
+public class Process extends Thread {
+    protected PrivateKey privateKey;
+    protected PublicKey publicKey;
+    private Boolean isFaulty;
+
+    public Process(Boolean isFaulty) {
+        this.isFaulty = isFaulty;
+    }
     
+    public void generateKey() {
+        
+    }
+    
+    public void publishKey(Long id, PublicKey publicKey) {
+        
+    }
 }

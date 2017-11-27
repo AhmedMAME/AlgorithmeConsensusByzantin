@@ -12,6 +12,6 @@ import java.util.HashMap;
  *
  * @author Mehdi
  */
-public class Annuaire extends HashMap<PublicKey, Long>{
+public class Annuaire extends HashMap<Long, PublicKey>{
     
 }

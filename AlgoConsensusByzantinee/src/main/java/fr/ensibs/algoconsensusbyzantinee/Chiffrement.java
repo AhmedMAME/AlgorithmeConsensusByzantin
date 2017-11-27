@@ -5,10 +5,21 @@
  */
 package fr.ensibs.algoconsensusbyzantinee;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
 /**
  *
  * @author Mehdi
  */
 public class Chiffrement {
-    
+  
+   public void signer(PrivateKey privateKey, Byte[] msg) {
+       
+   }
+   
+   public void verifierSignature(PublicKey publicKey, Byte[] msg) {
+       
+   }
 }
+

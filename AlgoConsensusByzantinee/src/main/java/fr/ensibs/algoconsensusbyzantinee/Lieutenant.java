@@ -10,5 +10,20 @@ package fr.ensibs.algoconsensusbyzantinee;
  * @author Mehdi
  */
 public class Lieutenant extends Process{
+
+    public Lieutenant(Boolean isFaulty) {
+        super(isFaulty);
+    }
     
+    public void sendMessage(Byte[] msg) {
+        
+    }
+    
+    public void choiceOrder() {
+        
+    }
+    
+    public void receiveMsg(Byte[] msg) {
+        
+    }
 }
