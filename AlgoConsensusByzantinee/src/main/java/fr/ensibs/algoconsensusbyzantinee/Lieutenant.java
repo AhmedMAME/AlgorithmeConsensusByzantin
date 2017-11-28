@@ -10,7 +10,7 @@ package fr.ensibs.algoconsensusbyzantinee;
  * @author Mehdi
  */
 public class Lieutenant extends Process{
-
+    
     public Lieutenant(Boolean isFaulty) {
         super(isFaulty);
     }

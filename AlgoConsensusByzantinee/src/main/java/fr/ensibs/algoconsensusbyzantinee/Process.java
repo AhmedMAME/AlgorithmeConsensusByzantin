@@ -7,6 +7,7 @@ package fr.ensibs.algoconsensusbyzantinee;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.HashMap;
 
 /**
  *
@@ -15,6 +16,7 @@ import java.security.PublicKey;
 public class Process extends Thread {
     protected PrivateKey privateKey;
     protected PublicKey publicKey;
+    
     private Boolean isFaulty;
 
     public Process(Boolean isFaulty) {
@@ -28,4 +30,10 @@ public class Process extends Thread {
     public void publishKey(Long id, PublicKey publicKey) {
         
     }
+
+    public Boolean getIsFaulty() {
+        return isFaulty;
+    }
+    
+    
 }
