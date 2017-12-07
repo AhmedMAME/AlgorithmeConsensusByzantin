@@ -16,7 +16,7 @@ public class Lieutenant extends Process{
     }
     
     public void sendMessage(Byte[] msg) {
-        
+        //notify();
     }
     
     public void choiceOrder() {
@@ -24,6 +24,15 @@ public class Lieutenant extends Process{
     }
     
     public void receiveMsg(Byte[] msg) {
-        
+
+    }
+    
+    @Override
+    public void run(){
+        Byte[] msg = null;
+        receiveMsg(msg);
+        choiceOrder();
+        sendMessage(msg);
+        //this.wait();
     }
 }
