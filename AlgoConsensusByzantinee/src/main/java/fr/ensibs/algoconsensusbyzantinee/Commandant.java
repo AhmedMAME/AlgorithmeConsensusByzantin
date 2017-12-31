@@ -1,11 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.ensibs.algoconsensusbyzantinee;
-
-import java.net.Socket;
 
 /**
  *
@@ -13,14 +6,30 @@ import java.net.Socket;
  */
 public class Commandant extends Process{
     public Byte[] intialMsg; 
-    public Socket _socket;
 
-    public Commandant(Boolean isFaulty,Socket _socket) {
+    public Commandant(Boolean isFaulty) {
         super(isFaulty);
-        this._socket = _socket;
     }
     
-    public void sendMessage(Byte[] msg) {
-        
+    /**
+     * Envoyer le message aux lieutenants
+     * 
+     * @param msg
+     */
+    public void sendMessage(byte[] msg) {
+    	// Recupérer une instance du chiffreur pour signer
+    	
+    	// Signer le message et récupérer les données signées
+    	
+    	// récupèrer la liste des lieutenants
+    	
+    	// Diffuser le message signé aux lieutenants
+    }
+    
+    @Override
+    public void run() {
+    	// Creer le message et le convertir en byte[]
+    	
+    	// Envoyer le message aux lieutenants
     }
 }

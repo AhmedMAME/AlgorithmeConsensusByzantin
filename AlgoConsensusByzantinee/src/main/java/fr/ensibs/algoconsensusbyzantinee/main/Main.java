@@ -23,6 +23,7 @@ public class Main {
     private static int nbrTraitre;
     
     private static HashMap<Long, PublicKey> annuaire = new HashMap<>();
+    private static Lieutenant[] lieutenants;
     
     private static int timeOut;
     
@@ -66,13 +67,17 @@ public class Main {
         Main.timeOut = timeOut;
     }
     
+    public static Lieutenant[] getLieutenants() {
+		return lieutenants;
+	}
+    
     private static void Init() {
     	
     	setTimeOut(CalculTimeOut());
     	nbrTraitre=(new Random().nextInt(nbrMaxTraitre + 1));
     	
     	Commandant commandant = new Commandant(false);
-    	Lieutenant[] lieutenants = new Lieutenant[nbrProces-1];
+    	lieutenants = new Lieutenant[nbrProces-1];
     	
     	boolean isFaulty = true;
     	
