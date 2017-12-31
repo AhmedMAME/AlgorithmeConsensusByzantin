@@ -7,6 +7,10 @@ package fr.ensibs.algoconsensusbyzantinee.main;
 
 import java.security.PublicKey;
 import java.util.HashMap;
+import java.util.Random;
+
+import fr.ensibs.algoconsensusbyzantinee.Commandant;
+import fr.ensibs.algoconsensusbyzantinee.Lieutenant;
 
 /**
  *
@@ -26,12 +30,27 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
         
-      
+    	if(args.length != 2)
+    		usage();
+    	
+    	try {
+			nbrProces = Integer.parseInt(args[0]);
+			nbrMaxTraitre = Integer.parseInt(args[1]);
+		} catch (NumberFormatException ex) {
+			usage();
+		}
+    	
+    	Init();
     }
 
-    public static HashMap<Long, PublicKey> getAnnuaire() {
+    private static void usage() {
+		System.out.println("Usage : \n\t\t AlgoConsensusByzantin nbrProcess nbrMaxTrait");
+		System.exit(0);
+		
+	}
+
+	public static HashMap<Long, PublicKey> getAnnuaire() {
         return annuaire;
     }
 
@@ -48,12 +67,35 @@ public class Main {
     }
     
     private static void Init() {
+    	
+    	setTimeOut(CalculTimeOut());
+    	nbrTraitre=(new Random().nextInt(nbrMaxTraitre + 1));
+    	
+    	Commandant commandant = new Commandant(false);
+    	Lieutenant[] lieutenants = new Lieutenant[nbrProces-1];
+    	
+    	boolean isFaulty = true;
+    	
+    	for (int i = 0, j=0; i < lieutenants.length; i++, j++) {
+    		
+    		if(j>=nbrTraitre)
+    			isFaulty = false;
+    		
+    		lieutenants[i] = new Lieutenant(isFaulty);
+		}
+    	
+    	commandant.start();
+    	Thread.currentThread().sleep(3000);
+    	
+    	for (int i = 0; i < lieutenants.length; i++) {
+			lieutenants[i].start();
+		}
         
     }
     
     private static int CalculTimeOut() {
-        // TO-DO
-        return 0;
+        
+    	return (new Random().nextInt(10000 - 5000 + 1) + 5000);
     }
     
 }
