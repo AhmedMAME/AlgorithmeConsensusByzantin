@@ -3,9 +3,7 @@ package fr.ensibs.algoconsensusbyzantinee;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Classe SharedMemory servira comme support pour
@@ -16,18 +14,19 @@ import java.util.Set;
  */
 public class SharedMemory {
     
+	private static final double COEFF = 0.6;
 	private HashMap<Long, PublicKey> annuaire;
 	private HashMap<Long, List<Message>> messages;
 	private PublicKey commandantSignature;
 	private Long commandantId;
-	private Set<String> V;
     private final int nbrMaxTraitre;
+    private int nbrLieutenants;
 	
-	public SharedMemory(int nbrMax) {
+	public SharedMemory(int nbrMax, int nbrPrc) {
 		
 		annuaire = new HashMap<>();
-		V = new HashSet<>();
 		nbrMaxTraitre = nbrMax;
+		nbrLieutenants = nbrPrc-1;
 		messages = new HashMap<>();
 	}
 	
@@ -69,14 +68,6 @@ public class SharedMemory {
 		return (id == this.commandantId);
 	}
 	
-	public synchronized void addValue(String value){	
-		V.add(value);
-	}
-	
-	public synchronized boolean contains(String value){
-		return V.contains(value);
-	}
-	
 	public HashMap<Long, PublicKey> getAnnuaire() {
 		return annuaire;
 	}
@@ -85,15 +76,11 @@ public class SharedMemory {
 		return nbrMaxTraitre;
 	}
 
-	public synchronized String getValue() {
-		return (String) V.toArray()[0];
-	}
-	
-	public synchronized int getV() {
-		return V.size();
-	}
-
 	public synchronized void addMessages(long id, ArrayList<Message> liste) {
 		messages.put(id, liste);
+	}
+	
+	public synchronized boolean isNotTime(long debut){
+		return ((System.currentTimeMillis()-debut) < ((nbrLieutenants*COEFF)*1000));
 	}
 }

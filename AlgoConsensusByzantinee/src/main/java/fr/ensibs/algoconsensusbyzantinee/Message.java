@@ -1,42 +1,39 @@
 package fr.ensibs.algoconsensusbyzantinee;
 
+import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Message {
 	
 	private byte[] initial;
-	private byte[] content;
-	private byte[] signed;
+	private List<PublicKey> signataire;
+	private List<byte[]> signature;
+	
 	
 	private long source;
 	private long destination;
 	
-	public Message(byte[] initial, byte[] content, byte[] signed, long source, long destnation) {
+	public Message(byte[] initial, long source, long destnation) {
 		
 		this.initial = initial;
-		this.content = content;
-		this.signed = signed;
+		this.signataire = new ArrayList<>();
+		this.signature = new ArrayList<>();
 		
 		this.source = source;
 		this.destination = destnation;
 	}
 	
-	public Message update(Message msg, byte[] msgSigned){
+	public Message update(PublicKey pk, byte[] msgSigned){
 		
-		this.content = this.signed;
-		this.signed = msgSigned;
+		this.signataire.add(pk);
+		this.signature.add(msgSigned);
 		
 		return this;
 	}
 
 	public byte[] getInitial() {
 		return initial;
-	}
-
-	public byte[] getContent() {
-		return content;
-	}
-
-	public byte[] getSigned() {
-		return signed;
 	}
 
 	public long getSource() {
@@ -57,5 +54,17 @@ public class Message {
 	
 	public void setInitial(byte[] initial) {
 		this.initial = initial;
+	}
+	
+	public List<PublicKey> getSignataire() {
+		return signataire;
+	}
+	
+	public List<byte[]> getSignature() {
+		return signature;
+	}
+	
+	public int getNumberOfSignataires(){
+		return signataire.size();
 	}
 }

@@ -18,7 +18,6 @@ public class Process extends Thread {
     protected SharedMemory memory;
     
     private Boolean isFaulty;
-    private Long id;
 
     /**
      * Création d'un processus (Commandant ou Lieutenant)
@@ -36,14 +35,12 @@ public class Process extends Thread {
         this.chiffreur = new Chiffrement();
         memory.addMessages(this.getId(), new ArrayList<Message>());
         
-        System.out.println("Thread "+this.getId()+": Construction du thread "+getId());
         KeyPair kp = generateKey();
         //initialisation private key
         this.privateKey = kp.getPrivate();
         //initialisation public key
         this.publicKey = kp.getPublic();
         publishKey();
-        System.out.println("Thread "+this.getId()+": Fin generation/publication des clés");
     }
     
     /**
@@ -82,7 +79,7 @@ public class Process extends Thread {
     		memory.addSignature(this.getId(), this.publicKey);
     }
 
-    public Boolean getIsFaulty() {
+    public Boolean isFaulty() {
         return isFaulty;
     }
     

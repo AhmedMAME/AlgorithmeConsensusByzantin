@@ -1,7 +1,8 @@
 package fr.ensibs.algoconsensusbyzantinee;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 import fr.ensibs.algoconsensusbyzantinee.main.Main;
 
@@ -11,10 +12,11 @@ import fr.ensibs.algoconsensusbyzantinee.main.Main;
  */
 public class Lieutenant extends Process{
 	
-	private List<Long> listes = new ArrayList<>();
+	private Set<String> V;
 	
     public Lieutenant(Boolean isFaulty, SharedMemory memory) {
         super(isFaulty, memory);
+		V = new HashSet<>();
     }
     
     public void receiveMessage() {
@@ -22,17 +24,18 @@ public class Lieutenant extends Process{
     	Message msg = memory.take(this.getId());
     	
         if(memory.isCommandant(msg.getSource())){
-        	if(chiffreur.verifierSignature(memory.getCommandantSignature(), msg.getContent(), msg.getSigned())){
-	        	memory.addValue(new String(msg.getInitial()));
-	        	sendMessage(msg.update(msg, chiffreur.signer(privateKey, msg.getSigned())));
+        	if(chiffreur.verifierSignature(msg)){
+	        	V.add(new String(msg.getInitial()));
+	        	byte[] msgSigned = msg.getSignature().get(msg.getNumberOfSignataires()-1);
+	        	sendMessage(msg.update(publicKey, chiffreur.signer(privateKey, msgSigned)));
         	}
         }
         else if(memory.getAnnuaire().containsKey(msg.getSource())){
-        	listes.add(msg.getSource());
-        	
-        	if(chiffreur.verifierSignature(memory.getAnnuaire().get(msg.getSource()), msg.getContent(), msg.getSigned())){
-        		memory.addValue(new String(msg.getInitial()));
-        		sendMessage(msg.update(msg, chiffreur.signer(privateKey, msg.getSigned())));
+        	if(chiffreur.verifierSignature(msg)){
+        		V.add(new String(msg.getInitial()));
+        		byte[] msgSigned = msg.getSignature().get(msg.getNumberOfSignataires()-1);
+        		if(msg.getNumberOfSignataires() < memory.getNbrMaxTraitre())
+        			sendMessage(msg.update(publicKey, chiffreur.signer(privateKey, msgSigned)));
 			}
         }
         else{
@@ -43,28 +46,41 @@ public class Lieutenant extends Process{
     
     public void sendMessage(Message msg) {
     	for(Lieutenant l : Main.getLieutenants()){
-        	if(!listes.contains(l.getId()) && l.getId() != getId()){
+        	if(!msg.getSignataire().contains(memory.getAnnuaire().get(l.getId()))){
         		msg.setSource(getId());
         		msg.setDestination(l.getId());
-        		if(this.getIsFaulty())
-        			msg.setInitial("0".getBytes());
+        		if(this.isFaulty()){
+        			int rand = new Random().nextInt(Decisions.values().length);
+        			String fake = "NONE";
+        			
+        			for (int i = 0; i < Decisions.values().length; i++) {
+						if(rand == i){
+							fake = Decisions.values()[i].toString();
+						}
+					}
+        			
+        			msg.setInitial(fake.getBytes());
+        		}
         		memory.put(msg);
         	}
         }
     }
     
     public String choiceOrder() {
-        
-    	System.err.println("Thread "+getId()+" :"+memory.getV());
+    	if(V.size() != 1)
+    		return (String) V.toArray()[V.size()/2];
     	
-    	return memory.getValue();
+    	return (String)V.toArray()[0];
     }
     
     @Override
     public void run(){
-        while(listes.size() != Main.getLieutenants().length-1){
+    	
+    	long debut = System.currentTimeMillis();
+    	
+        while(memory.isNotTime(debut)){
         	receiveMessage();
         }
-        System.out.println("Thread "+getId()+" :"+choiceOrder()+" sources ="+listes.size());
+        System.out.println("Thread "+getId()+" a voté : "+choiceOrder()+" "+V);
     }
 }

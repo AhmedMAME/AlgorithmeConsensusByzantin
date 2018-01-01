@@ -3,7 +3,6 @@ package fr.ensibs.algoconsensusbyzantinee;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 
@@ -65,23 +64,26 @@ public class Chiffrement {
 	 * @param msg
 	 *            message signé
 	 */
-	public boolean verifierSignature(PublicKey publicKey, byte[] msg, byte[] signedMsg) {
+	public boolean verifierSignature(Message msg) {
 
-		boolean isSigned = false;
+		boolean isSigned = true;
 
 		try {
 
 			// Générer une signature en utilisant SHA256withDSA
 			Signature signature = Signature.getInstance("SHA256withDSA");
-
-			// Initialiser la signature avec la clé publique
-			signature.initVerify(publicKey);
-
-			// Mettre à jour le message
-			signature.update(msg);
-
-			// Vérifier si le massage est signé
-			isSigned = signature.verify(signedMsg);
+			
+			for(int i=msg.getNumberOfSignataires()-1; i>0; i--){
+				signature.initVerify(msg.getSignataire().get(i));
+				signature.update(msg.getSignature().get(i-1));
+				isSigned = isSigned && signature.verify(msg.getSignature().get(i));
+			}
+			
+			signature.initVerify(msg.getSignataire().get(0));
+			signature.update(msg.getInitial());
+			isSigned = isSigned && signature.verify(msg.getSignature().get(0));
+			
+			return isSigned;
 
 		} catch (NoSuchAlgorithmException e) {
 			System.err.println("Erreur d'algorithme (inexistant)");
@@ -92,6 +94,6 @@ public class Chiffrement {
 		}
 
 		// retourner une réponse
-		return isSigned;
+		return false;
 	}
 }

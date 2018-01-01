@@ -23,19 +23,19 @@ public class Commandant extends Process{
     	// Signer le message et récupérer les données signées
         byte[] signedMsg = chiffreur.signer(privateKey, initial);
         // Diffuser le message signé aux lieutenants
-        System.out.println("Thread "+this.getId()+": Commandant: Envoi à tous les lieutenants");
         for (long lieutenant : memory.getAnnuaire().keySet()) {
-            memory.put(new Message(initial, initial, signedMsg, getId(), lieutenant));
+        	Message msg = new Message(initial, getId(), lieutenant);
+        	msg.update(publicKey, signedMsg);
+            memory.put(msg);
         }
     }
     
     @Override
     public void run() {
     	// Creer le message et le convertir en byte[]
-        String test = "1";
-    	byte[] msg = test.getBytes();
+        String message = Decisions.UN.toString();
+    	byte[] msg = message.getBytes();
     	// Envoyer le message aux lieutenants
         sendMessage(msg);
-        System.out.println("Thread "+this.getId()+": Fin run du commandant");
     }
 }
