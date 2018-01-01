@@ -1,98 +1,70 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.ensibs.algoconsensusbyzantinee;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.security.PublicKey;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import fr.ensibs.algoconsensusbyzantinee.main.Main;
 
 /**
  *
  * @author Mehdi
  */
 public class Lieutenant extends Process{
-    Socket socket;
-    Chiffrement chiffrement;
-    Annuaire annuaire;
+	
+	private List<Long> listes = new ArrayList<>();
+	
+    public Lieutenant(Boolean isFaulty, SharedMemory memory) {
+        super(isFaulty, memory);
+    }
     
-    public Lieutenant(Boolean isFaulty, Socket _socket,Annuaire _annuaire) {
-        super(isFaulty);
-        this.socket = _socket;
-        this.generateKey();
-        this.annuaire = _annuaire;
-    }
-    public void byteToByte(byte[] _byte,Byte[] _Byte)
-    {
-        _Byte = new Byte[_byte.length];
-        for (int i = 0; i < _byte.length; i++)
-        {
-            _Byte[i] = Byte.valueOf(_byte[i]);
+    public void receiveMessage() {
+    	
+    	Message msg = memory.take(this.getId());
+    	
+        if(memory.isCommandant(msg.getSource())){
+        	if(chiffreur.verifierSignature(memory.getCommandantSignature(), msg.getContent(), msg.getSigned())){
+	        	memory.addValue(new String(msg.getInitial()));
+	        	sendMessage(msg.update(msg, chiffreur.signer(privateKey, msg.getSigned())));
+        	}
         }
-    }
-    public boolean receiveMessage(Socket _socket, Byte[] msg) throws IOException {
-        BufferedReader in = null;
-        boolean lContinue = true;
-        
-        try {
-            in = new BufferedReader(new InputStreamReader(_socket.getInputStream()));
-            while(lContinue) {
-                this.byteToByte(in.readLine().getBytes(),msg);
-                this.chiffrement.verifierSignature(this.publicKey,msg);
-                if (msg != null){
-                  return true;
-                }
-            }
-        }catch(IOException e){
-        }   
-        return false;
-    }
-    public void sendMessage(Socket _socket, Byte[] msg) throws IOException {
-        PrintWriter out = null;
-        try {
-            out = new PrintWriter(new OutputStreamWriter(_socket.getOutputStream()));
-            this.chiffrement.signer(this.privateKey,msg);
-            out.println(msg);
-            out.flush();
-        }catch(IOException e){
+        else if(memory.getAnnuaire().containsKey(msg.getSource())){
+        	listes.add(msg.getSource());
+        	
+        	if(chiffreur.verifierSignature(memory.getAnnuaire().get(msg.getSource()), msg.getContent(), msg.getSigned())){
+        		memory.addValue(new String(msg.getInitial()));
+        		sendMessage(msg.update(msg, chiffreur.signer(privateKey, msg.getSigned())));
+			}
+        }
+        else{
+        	System.err.println("Thread "+this.getId()+": Reception d'un message non signé");
+        	System.exit(0);
         }
     }
     
-    public void choiceOrder(Byte[] _msg) {
-        
+    public void sendMessage(Message msg) {
+    	for(Lieutenant l : Main.getLieutenants()){
+        	if(!listes.contains(l.getId()) && l.getId() != getId()){
+        		msg.setSource(getId());
+        		msg.setDestination(l.getId());
+        		if(this.getIsFaulty())
+        			msg.setInitial("0".getBytes());
+        		memory.put(msg);
+        	}
+        }
     }
-   
+    
+    public String choiceOrder() {
+        
+    	System.err.println("Thread "+getId()+" :"+memory.getV());
+    	
+    	return memory.getValue();
+    }
     
     @Override
     public void run(){
-        Socket commandant = null;
-        Socket lieutenent = null;
-        Byte[] msg = null;
-        ServerSocket serverSocket;
-        boolean lContinue = true;
-        try {
-            serverSocket = new ServerSocket(1234);
-            while(lContinue) {
-                lContinue = receiveMessage(commandant,msg);
-            }
-            
-            for (HashMap.Entry<Long,PublicKey> e : this.annuaire.entrySet()) {
-                lieutenent = new Socket("toto", 80);
-                sendMessage(lieutenent, msg);
-            }
-            
-        } catch (IOException ex) {
-            Logger.getLogger(Lieutenant.class.getName()).log(Level.SEVERE, null, ex);
+        while(listes.size() != Main.getLieutenants().length-1){
+        	receiveMessage();
         }
-        this.choiceOrder(msg);
+        System.out.println("Thread "+getId()+" :"+choiceOrder()+" sources ="+listes.size());
     }
 }

@@ -1,40 +1,31 @@
 package fr.ensibs.algoconsensusbyzantinee;
 
-import fr.ensibs.algoconsensusbyzantinee.main.Main;
-
 /**
  *
  * @author Mehdi
  */
 public class Commandant extends Process{
-    public byte[] initialMsg; 
 
     /*
     
     */
-    public Commandant(Boolean isFaulty) {
-        super(isFaulty);
+    public Commandant(Boolean isFaulty, SharedMemory memory) {
+        super(isFaulty, memory);
     }
-    
-
-   
 
     /**
      * Envoyer le message aux lieutenants
      * 
      * @param msg
      */
-    public void sendMessage(byte[] msg) {
-    	// Recupérer une instance du chiffreur pour signer
-    	Chiffrement chiffrement = new Chiffrement();
-        // Signer le message et récupérer les données signées
-        this.initialMsg = chiffrement.signer(privateKey, msg);
-        // récupèrer la liste des lieutenants
-        Lieutenant[] lieutenants = Main.getLieutenants();
+    public void sendMessage(byte[] initial) {
+    	
+    	// Signer le message et récupérer les données signées
+        byte[] signedMsg = chiffreur.signer(privateKey, initial);
         // Diffuser le message signé aux lieutenants
-        for (Lieutenant lieutenant : lieutenants) {
-            lieutenant.sendMessage(_socket, initialMsg); //sendMessage de la classe Lieutenant doit avoir un seul paramètre qui est le byte[] message
-            //lieutenant.sendMessage(initialMsg);
+        System.out.println("Thread "+this.getId()+": Commandant: Envoi à tous les lieutenants");
+        for (long lieutenant : memory.getAnnuaire().keySet()) {
+            memory.put(new Message(initial, initial, signedMsg, getId(), lieutenant));
         }
     }
     
@@ -45,5 +36,6 @@ public class Commandant extends Process{
     	byte[] msg = test.getBytes();
     	// Envoyer le message aux lieutenants
         sendMessage(msg);
+        System.out.println("Thread "+this.getId()+": Fin run du commandant");
     }
 }

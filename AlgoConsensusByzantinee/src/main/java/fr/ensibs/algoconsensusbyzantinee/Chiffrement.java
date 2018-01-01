@@ -65,7 +65,7 @@ public class Chiffrement {
 	 * @param msg
 	 *            message signé
 	 */
-	public boolean verifierSignature(PublicKey publicKey, byte[] msg) {
+	public boolean verifierSignature(PublicKey publicKey, byte[] msg, byte[] signedMsg) {
 
 		boolean isSigned = false;
 
@@ -81,14 +81,14 @@ public class Chiffrement {
 			signature.update(msg);
 
 			// Vérifier si le massage est signé
-			isSigned = signature.verify(msg);
+			isSigned = signature.verify(signedMsg);
 
 		} catch (NoSuchAlgorithmException e) {
 			System.err.println("Erreur d'algorithme (inexistant)");
 		} catch (InvalidKeyException e) {
 			System.err.println("Erreur de clé invalide");
 		} catch (SignatureException e) {
-			System.err.println("Erreur de verification");
+			System.err.println("Erreur de verification "+e.getMessage());
 		}
 
 		// retourner une réponse
