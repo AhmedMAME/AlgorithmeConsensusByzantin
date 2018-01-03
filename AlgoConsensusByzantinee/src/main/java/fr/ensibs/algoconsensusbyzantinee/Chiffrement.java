@@ -8,7 +8,7 @@ import java.security.SignatureException;
 
 /**
  * Classe Chiffrement traite de tout ce qui est signature du message et
- * virification des signatures des autres threads
+ * vérification des signatures des autres threads
  * 
  * @author Mehdi
  */
@@ -29,7 +29,7 @@ public class Chiffrement {
 
 		try {
 
-			// Génèrer une signature en utilisant SHA256withDSA
+			// Génèrer une signature en utilisant du SHA256withDSA
 			Signature signature = Signature.getInstance("SHA256withDSA");
 
 			// Initialiser la signature avec la clé reçue
@@ -71,7 +71,7 @@ public class Chiffrement {
 			// Générer une signature en utilisant SHA256withDSA
 			Signature signature = Signature.getInstance("SHA256withDSA");
 			
-			// Vérifier si sinature(i) est vraiment le résultat de la 
+			// Vérifier si signature(i) est vraiment le résultat de la 
 			// signature de signature(i-1) par le signataire(i)
 			for(int i=msg.getNumberOfSignataires()-1; i>0; i--){
 				signature.initVerify(msg.getSignataire().get(i));

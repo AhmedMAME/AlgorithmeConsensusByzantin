@@ -20,7 +20,7 @@ public class SharedMemory {
 	
 	// Annuaire regroupant toutes les clés publiques publiées
 	private HashMap<Long, PublicKey> annuaire;
-	// Liste des bôites aux lettres des processus
+	// Liste des boîtes aux lettres des processus
 	private HashMap<Long, List<Message>> messages;
 	// Clé publique du commandant
 	private PublicKey commandantSignature;
@@ -50,7 +50,7 @@ public class SharedMemory {
 		// Tant que sa boîte aux lettres est vide, il attend
 		while(messages.get(id).size() <= 0)
 			try {
-				// Attendre aux maximum le timeout
+				// Attendre au maximum le timeout
 				wait(time);
 			} catch (InterruptedException e) {
 			}
@@ -67,7 +67,7 @@ public class SharedMemory {
 	 * @param msg message à livrer
 	 */
 	public synchronized void put(Message msg){
-		// dépose le message dans la boîtes
+		// dépose le message dans la boîte
 		// aux lettres du destinataire
 		messages.get(msg.getDestination()).add(msg);
 		// alerte les autres processus qu'un 

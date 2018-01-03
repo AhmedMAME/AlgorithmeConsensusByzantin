@@ -17,7 +17,7 @@ public class Process extends Thread {
     protected PrivateKey privateKey;
     protected PublicKey publicKey;
     
-    // Un chiffreur pour les opération de signature et de vérification
+    // Un chiffreur pour les opérations de signature et de vérification
     protected Chiffrement chiffreur;
     // La mémoire partagée avec les autres processus
     protected SharedMemory memory;
@@ -64,7 +64,7 @@ public class Process extends Thread {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("DSA");
             // Initialisation du générateur de clé avec la longueur 2048 
             kpg.initialize(2048);
-            // Génération de la paire des clés 
+            // Génération de la paire de clés 
             KeyPair kp = kpg.generateKeyPair();
             
             // Initialisation des deux attributs du processus avec les deux clés

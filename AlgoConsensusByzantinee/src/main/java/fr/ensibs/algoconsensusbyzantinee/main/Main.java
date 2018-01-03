@@ -24,7 +24,7 @@ public class Main {
      */
     public static void main(String[] args) {
         
-    	// Contrôle de paramètres 
+    	// Contrôle des paramètres 
     	if(args.length != 2)
     		usage();
     	
@@ -58,7 +58,7 @@ public class Main {
     	// Determination du nombre de traitres
     	nbrTraitre=(new Random().nextInt(nbrMax + 1));
     	
-    	// Création du commandant (false pour dire qu'il n'est pas traitre)
+    	// Création du commandant (false pour dire qu'il n'est pas un traitre)
     	Commandant commandant = new Commandant(false, memory);
     	
     	// Création des Lieutenants (parmi lesquels il y a des traitres)
