@@ -12,9 +12,14 @@ import java.util.ArrayList;
  * @author Mehdi
  */
 public class Process extends Thread {
+	
+	// La paire des clés du processus (privée et publique)
     protected PrivateKey privateKey;
     protected PublicKey publicKey;
+    
+    // Un chiffreur pour les opération de signature et de vérification
     protected Chiffrement chiffreur;
+    // La mémoire partagée avec les autres processus
     protected SharedMemory memory;
     
     private Boolean isFaulty;
@@ -30,16 +35,21 @@ public class Process extends Thread {
      * @param isFaulty
      */
     public Process(Boolean isFaulty, SharedMemory memory) {
-        this.isFaulty = isFaulty;
+        
+    	this.isFaulty = isFaulty;
         this.memory = memory;
         this.chiffreur = new Chiffrement();
+        
+        // Création de la boîte aux lettres du processus
+        // Dans cette boîte, les autres processus déposeront
+        // les messages à destination de celui ci
         memory.addMessages(this.getId(), new ArrayList<Message>());
         
         KeyPair kp = generateKey();
-        //initialisation private key
+        // Initialisation des clés
         this.privateKey = kp.getPrivate();
-        //initialisation public key
         this.publicKey = kp.getPublic();
+        
         publishKey();
     }
     
@@ -71,6 +81,8 @@ public class Process extends Thread {
      */
     public void publishKey() {
         // Ajout de l'entrée (clé publique)
+    	// à l'annuaire dans l'espace partagé
+    	
     	if (this instanceof Commandant){
     		memory.setCommandantSignature(publicKey);
     		memory.setCommandantId(this.getId());
@@ -78,9 +90,12 @@ public class Process extends Thread {
     	else
     		memory.addSignature(this.getId(), this.publicKey);
     }
-
+    
     public Boolean isFaulty() {
         return isFaulty;
     }
     
+    public PublicKey getPublicKey() {
+		return publicKey;
+	}
 }

@@ -12,6 +12,7 @@ import fr.ensibs.algoconsensusbyzantinee.SharedMemory;
  */
 
 public class Main {
+	
     private static int nbrProces;
     private static int nbrTraitre;
     
@@ -23,6 +24,7 @@ public class Main {
      */
     public static void main(String[] args) {
         
+    	// Contrôle de paramètres 
     	if(args.length != 2)
     		usage();
     	
@@ -35,6 +37,7 @@ public class Main {
 			usage();
 		}
     	
+    	// Initialisation de l'application 
     	Init(max);
     }
 
@@ -50,24 +53,35 @@ public class Main {
     
     private static void Init(int nbrMax) {
     	
+    	// Initialisation de l'espace partagé par les threads
     	memory = new SharedMemory(nbrMax, nbrProces);
+    	// Determination du nombre de traitres
     	nbrTraitre=(new Random().nextInt(nbrMax + 1));
     	
+    	// Création du commandant (false pour dire qu'il n'est pas traitre)
     	Commandant commandant = new Commandant(false, memory);
-    	lieutenants = new Lieutenant[nbrProces-1];
     	
+    	// Création des Lieutenants (parmi lesquels il y a des traitres)
+    	lieutenants = new Lieutenant[nbrProces-1];
     	boolean isFaulty = true;
     	
     	for (int i = 0, j=0; i < lieutenants.length; i++, j++) {
-    		
     		if(j>=nbrTraitre)
     			isFaulty = false;
-    		
     		lieutenants[i] = new Lieutenant(isFaulty, memory);
 		}
     	
+    	// Démarrage du commandant
     	commandant.start();
     	
+    	//Attente de 3 secondes (pour que le commandant diffuse l'ordre)
+    	try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			System.err.println("Erreur d'attente du commandant");
+		}
+    	
+    	// Démarrage des Lieutenants
     	for (int i = 0; i < lieutenants.length; i++) {
 			lieutenants[i].start();
     		;

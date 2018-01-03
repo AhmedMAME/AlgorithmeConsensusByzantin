@@ -55,34 +55,37 @@ public class Chiffrement {
 	}
 
 	/**
-	 * Méthode verifierSignature() recevra un message et une clé publique pour
-	 * vérifier si ce message a été signé par la clé privée correspondante à la
-	 * clé publique reçue
+	 * Méthode verifierSignature() recevra un message pour
+	 * vérifier si ce message a été signé par l'ensemble de
+	 * ses signataire ou s'il y a eu lieu d'altération de
+	 * données
 	 * 
-	 * @param publicKey
-	 *            clé publique du signataire
 	 * @param msg
-	 *            message signé
+	 *            message à vérifier
 	 */
 	public boolean verifierSignature(Message msg) {
 
 		boolean isSigned = true;
-
+		
 		try {
-
 			// Générer une signature en utilisant SHA256withDSA
 			Signature signature = Signature.getInstance("SHA256withDSA");
 			
+			// Vérifier si sinature(i) est vraiment le résultat de la 
+			// signature de signature(i-1) par le signataire(i)
 			for(int i=msg.getNumberOfSignataires()-1; i>0; i--){
 				signature.initVerify(msg.getSignataire().get(i));
 				signature.update(msg.getSignature().get(i-1));
 				isSigned = isSigned && signature.verify(msg.getSignature().get(i));
 			}
 			
-			signature.initVerify(msg.getSignataire().get(0));
+			// Vérifier si la première signature est le résultat de la 
+			// signature du message clair (initial) par le premier signataire
+ 			signature.initVerify(msg.getSignataire().get(0));
 			signature.update(msg.getInitial());
 			isSigned = isSigned && signature.verify(msg.getSignature().get(0));
 			
+			// résultat de la vérification
 			return isSigned;
 
 		} catch (NoSuchAlgorithmException e) {
@@ -93,7 +96,7 @@ public class Chiffrement {
 			System.err.println("Erreur de verification "+e.getMessage());
 		}
 
-		// retourner une réponse
+		// si une erreur, retourner faux
 		return false;
 	}
 }
