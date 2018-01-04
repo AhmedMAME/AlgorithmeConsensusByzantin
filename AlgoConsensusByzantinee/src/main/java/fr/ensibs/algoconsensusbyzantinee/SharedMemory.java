@@ -22,6 +22,8 @@ public class SharedMemory {
 	private HashMap<Long, PublicKey> annuaire;
 	// Liste des boîtes aux lettres des processus
 	private HashMap<Long, List<Message>> messages;
+	// Nombre de message reçus par Lieutenants
+	private HashMap<Long, Integer> compteurs;
 	// Clé publique du commandant
 	private PublicKey commandantSignature;
 	// L'id du commandant
@@ -36,6 +38,7 @@ public class SharedMemory {
 		nbrMaxTraitre = nbrMax;
 		nbrLieutenants = nbrPrc-1;
 		messages = new HashMap<>();
+		compteurs = new HashMap<>();
 	}
 	
 	/**
@@ -48,15 +51,24 @@ public class SharedMemory {
 	 */
 	public synchronized Message take(Long id, long time){
 		// Tant que sa boîte aux lettres est vide, il attend
-		while(messages.get(id).size() <= 0)
+		while(messages.get(id).size() <= 0 ){
+			// S'il a reçu le nombre max de massages
+			// c.a.d n-1 lieutenant + 1 commandant
+			// il s'arrête
+			if(compteurs.get(id) >= nbrLieutenants){
+				return null;
+			}
+			// sinon 
 			try {
 				// Attendre au maximum le timeout
-				wait(time);
+				wait(calculTimeOut(time));
 			} catch (InterruptedException e) {
 			}
+		}
 		
 		// Récupère le premier message
 		Message msg = messages.get(id).remove(0);
+		compteurs.put(id, compteurs.get(id)+1);
 		
 		return msg;
 	}
@@ -105,6 +117,10 @@ public class SharedMemory {
 
 	public synchronized void addMessages(long id, ArrayList<Message> liste) {
 		messages.put(id, liste);
+	}
+	
+	public synchronized void addCompteurs(long id) {
+		compteurs.put(id, 0);
 	}
 	
 	/**
